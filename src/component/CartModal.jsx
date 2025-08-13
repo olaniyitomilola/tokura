@@ -1,26 +1,53 @@
 import React from "react";
 import { X } from "lucide-react";
+import { loadStripe } from "@stripe/stripe-js";
 import { useCart } from "../Context/CartContext";
 import CartItem from "./CartItem";
 import { useCurrency } from "../Context/CurrencyContext";
 
-const formatPrice = (amount, currency) => {
-  return new Intl.NumberFormat(undefined, {
+const stripePromise = loadStripe("pk_test_YOUR_PUBLIC_KEY"); // your publishable key
+
+const formatPrice = (amount, currency) =>
+  new Intl.NumberFormat(undefined, {
     style: "currency",
     currency,
     minimumFractionDigits: 2,
   }).format(amount);
-};
 
 const CartModal = () => {
   const { cart = [], isOpen, closeCart } = useCart();
   const { currency, convertPrice } = useCurrency();
 
-  // Calculate total price in selected currency
   const totalPrice = cart.reduce(
     (sum, item) => sum + convertPrice(parseFloat(item.price)) * item.quantity,
     0
   );
+
+  const handleCheckout = async () => {
+    const stripe = await stripePromise;
+
+    const res = await fetch("http://localhost:4242/create-checkout-session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        items: cart.map(item => ({
+          name: item.name,
+          image: item.image,
+          price: convertPrice(parseFloat(item.price)), // converted price
+          quantity: item.quantity,
+        })),
+        currency,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (data.url) {
+      window.location.href = data.url; // redirect to Stripe
+    } else {
+      console.error("Stripe session creation failed", data);
+    }
+  };
 
   return (
     <div
@@ -59,12 +86,13 @@ const CartModal = () => {
             <span>Total:</span>
             <span>{formatPrice(totalPrice, currency)}</span>
           </div>
-          <button
-            onClick={() => alert("Proceed to checkout")}
-            className="cursor-pointer w-full bg-black text-white py-2 rounded hover:bg-gray-800 transition"
-          >
-            Checkout
-          </button>
+         <a
+  href="/checkout"
+  className="block w-full text-center bg-black text-white py-2 rounded hover:bg-gray-800 transition"
+>
+  Checkout
+</a>
+
         </div>
       )}
     </div>

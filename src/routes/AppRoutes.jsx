@@ -2,16 +2,15 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import Home from '../pages/Home';
-import Cart from '../pages/Cart';
 import NotFound from '../pages/NotFound';
 import ProductPage from '../pages/ProductPage';
 import Wigs from '../pages/Wigs';
 import Bundles from '../pages/Bundles';
 import Layout from '../layout/Layout';
-import WigRental from '../pages/WigRental';
-import Accessories from '../pages/Accessories';
+import CheckoutPage from '../pages/CheckoutPage';
 import ScrollToTop from '../component/ScrollToTop';
 import TrackOrder from '../pages/TrackOrders';
+import ReturnPage from '../pages/ReturnPage';
 
 const AppRoutes = () => (
     <Router>
@@ -25,7 +24,10 @@ const AppRoutes = () => (
                 <Route path="wigs" element={<Wigs />} />
                 <Route path="bundles" element={<Bundles />} />
                 
-                {/* <Route path="wigrental" element={<WigRental />} /> */}
+                <Route path="checkout" element={<CheckoutPage />} />
+                <Route path="return" element={<ReturnPage />} />
+
+
                 {/* <Route path="accessories" element={<Accessories/>} /> */}
             </Route>
             <Route path="*" element={<NotFound />} />
