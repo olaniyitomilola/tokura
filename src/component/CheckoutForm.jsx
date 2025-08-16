@@ -17,7 +17,8 @@ const CheckoutForm = () => {
   const { currency, convertPrice } = useCurrency();
 
   // Create checkout session
-  const fetchClientSecret = useCallback(() => {
+  const fetchClientSecret = useCallback(async () => {
+    console.log(cart)
     return fetch(`${baseUrl}/checkout`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },

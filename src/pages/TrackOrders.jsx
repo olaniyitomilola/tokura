@@ -15,13 +15,19 @@ const TrackOrder = () => {
 
     try {
       const baseUrl = import.meta.env.VITE_API_URL;
-      const response = await fetch(`${baseUrl}/track-order`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, orderId }),
-      });
+
+      // clean inputs
+      const cleanEmail = email.trim();
+      let cleanOrderId = orderId.trim().toUpperCase();
+      if (cleanOrderId.startsWith("#")) {
+        cleanOrderId = cleanOrderId.slice(1);
+      }
+
+      const response = await fetch(
+        `${baseUrl}/orders/track?orderId=${encodeURIComponent(
+          cleanOrderId
+        )}&email=${encodeURIComponent(cleanEmail)}`
+      );
 
       if (!response.ok) {
         throw new Error("Order not found. Please check your details.");
@@ -36,13 +42,49 @@ const TrackOrder = () => {
     }
   };
 
-  return (
-    <div className="max-w-xl mx-auto px-4 py-12">
-      <h2 className="text-2xl font-semibold mb-6 text-center">Track Your Order</h2>
+  const renderStatus = () => {
+    if (!order) return null;
 
+    switch (order.status) {
+      case "paid":
+        return (
+          <span className="px-3 py-1 text-sm rounded-full bg-yellow-100 text-yellow-700 animate-pulse">
+            Processing...
+          </span>
+        );
+      case "shipped":
+        return (
+          <span className="px-3 py-1 text-sm rounded-full bg-green-100 text-green-700">
+            Shipped
+          </span>
+        );
+      case "delivered":
+        return (
+          <span className="px-3 py-1 text-sm rounded-full bg-blue-100 text-blue-700">
+            Delivered
+          </span>
+        );
+      default:
+        return (
+          <span className="px-3 py-1 text-sm rounded-full bg-gray-100 text-gray-700">
+            {order.status}
+          </span>
+        );
+    }
+  };
+
+  return (
+    <div className="max-w-3xl mx-auto px-4 py-12">
+      <h2 className="text-2xl font-semibold mb-6 text-center">
+        Track Your Order
+      </h2>
+
+      {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block mb-1 text-sm font-medium">Email Address</label>
+          <label className="block mb-1 text-sm font-medium">
+            Email Address
+          </label>
           <input
             type="email"
             required
@@ -63,9 +105,6 @@ const TrackOrder = () => {
           />
         </div>
 
-        {/* Optional CAPTCHA placeholder */}
-        {/* <div className="text-xs text-gray-500">CAPTCHA goes here</div> */}
-
         <button
           type="submit"
           disabled={loading}
@@ -77,21 +116,63 @@ const TrackOrder = () => {
         {error && <p className="text-red-500 mt-2">{error}</p>}
       </form>
 
+      {/* Order Details */}
       {order && (
-        <div className="mt-8 border p-4 rounded-md bg-gray-50 text-sm">
-          <h3 className="font-semibold mb-2">Order Status: {order.status}</h3>
-          <p className="mb-1">Order ID: {order.id}</p>
-          <p className="mb-1">Date: {new Date(order.createdAt).toLocaleString()}</p>
-          <p className="mb-2">Email: {order.email}</p>
+        <div className="mt-8 border p-6 rounded-md bg-white shadow text-sm">
+          {/* Status */}
+          {/* Status */}
+<div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4">
+  <h3 className="text-lg sm:text-xl md:text-2xl font-semibold break-words">
+    Order #{order.orderId}
+  </h3>
+  {renderStatus()}
+</div>
 
-          <h4 className="font-medium mt-4">Items:</h4>
-          <ul className="list-disc list-inside">
+<p className="text-gray-600 text-sm sm:text-base mb-1">
+  Placed on {new Date(order.createdAt).toLocaleDateString()}
+</p>
+<p className="text-gray-600 text-sm sm:text-base mb-4">{order.customerEmail}</p>
+
+{/* Tracking Info - show if not "paid" and tracking exists */}
+{order.status !== "paid" && order.tracking_number && order.tracking_url && (
+  <div className="mb-4">
+    <p className="text-sm sm:text-base text-gray-600">Tracking Number:</p>
+    <a
+      href={order.tracking_url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-sm sm:text-base font-medium text-blue-600 hover:underline break-words"
+    >
+      {order.tracking_number}
+    </a>
+  </div>
+)}
+
+
+          {/* Items */}
+          <div className="divide-y border rounded-md">
             {order.items.map((item, i) => (
-              <li key={i}>
-                {item.name} ({item.size}") – ${item.price}
-              </li>
+              <div key={i} className="flex justify-between p-3">
+                <div>
+                  <p className="font-medium">{item.name}</p>
+                  <p className="text-xs text-gray-500">
+                    Size: {item.size}" × {item.quantity}
+                  </p>
+                </div>
+                <p className="font-semibold">
+                  {item.currency.toUpperCase()} {item.price}
+                </p>
+              </div>
             ))}
-          </ul>
+          </div>
+
+          {/* Total */}
+          <div className="flex justify-between items-center mt-4 font-semibold text-base">
+            <span>Total</span>
+            <span>
+              {order.currency.toUpperCase()} {order.totalAmount}
+            </span>
+          </div>
         </div>
       )}
     </div>
