@@ -8,7 +8,7 @@ import {
 import { useCart } from "../Context/CartContext";
 import { useCurrency } from "../Context/CurrencyContext";
 
-const stripePromise =  loadStripe(import.meta.env.VITE_TEST_KEY); 
+const stripePromise =  loadStripe(import.meta.env.VITE_STRIPE_KEY); 
         const baseUrl = import.meta.env.VITE_API_URL;
 
 
