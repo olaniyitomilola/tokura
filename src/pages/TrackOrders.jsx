@@ -121,34 +121,32 @@ const TrackOrder = () => {
         <div className="mt-8 border p-6 rounded-md bg-white shadow text-sm">
           {/* Status */}
           {/* Status */}
-<div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4">
-  <h3 className="text-lg sm:text-xl md:text-2xl font-semibold break-words">
-    Order #{order.orderId}
-  </h3>
-  {renderStatus()}
-</div>
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4">
+            <h3 className="text-lg sm:text-xl md:text-2xl font-semibold break-words">
+              Order #{order.orderId}
+            </h3>
+            {renderStatus()}
+          </div>
 
-<p className="text-gray-600 text-sm sm:text-base mb-1">
-  Placed on {new Date(order.createdAt).toLocaleDateString()}
-</p>
-<p className="text-gray-600 text-sm sm:text-base mb-4">{order.customerEmail}</p>
+          <p className="text-gray-600 text-sm sm:text-base mb-1">
+            Placed on {new Date(order.createdAt).toLocaleDateString()}
+          </p>
+          <p className="text-gray-600 text-sm sm:text-base mb-4">{order.customerEmail}</p>
 
-{/* Tracking Info - show if not "paid" and tracking exists */}
-{order.status !== "paid" && order.tracking_number && order.tracking_url && (
-  <div className="mb-4">
-    <p className="text-sm sm:text-base text-gray-600">Tracking Number:</p>
-    <a
-      href={order.tracking_url}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="text-sm sm:text-base font-medium text-blue-600 hover:underline break-words"
-    >
-      {order.tracking_number}
-    </a>
-  </div>
-)}
-
-
+          {/* Tracking Info - show if not "paid" and tracking exists */}
+          {order.status !== "paid" && order.tracking_number && order.tracking_url && (
+            <div className="mb-4">
+              <p className="text-sm sm:text-base text-gray-600">Tracking Number:</p>
+              <a
+                href={order.tracking_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm sm:text-base font-medium text-blue-600 hover:underline break-words"
+              >
+                {order.tracking_number}
+              </a>
+            </div>
+          )}
           {/* Items */}
           <div className="divide-y border rounded-md">
             {order.items.map((item, i) => (

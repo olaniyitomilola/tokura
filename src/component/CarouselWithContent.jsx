@@ -31,6 +31,7 @@ export default function CarouselWithContent() {
             src={src}
             alt={`Slide ${index}`}
             className="h-full w-full object-cover"
+            loading="lazy"
           />
         ))}
       </Carousel>

@@ -25,8 +25,6 @@ const Home = () => {
         setWigs(wigsData);
         setBundles(bundlesData);
 
-        console.log("Wigs:", wigsData);
-        console.log("Bundles:", bundlesData);
       } catch (error) {
         console.error("Failed to fetch products:", error);
       }
@@ -58,7 +56,7 @@ const Home = () => {
     <div>
       <CarouselWithContent />
       <ProductGrid title="Ready-to-Wear Wigs" products={wigs} />
-      <ProductGrid title="Luxury Bundles Collection" products={bundles} />
+      <ProductGrid removeSpace={true} title="Luxury Bundles Collection" products={bundles} />
     </div>
   );
 };
